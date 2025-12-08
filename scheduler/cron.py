@@ -1,20 +1,22 @@
-import time
-from utils.logger import log
-from utils.scraper import scrape_trending_worldcup
-from ai.reaction_engine import generate_reaction
-from social.twitter_service import post_tweet
-from config import Config
+﻿import time
+from utils.logger import setup_logger
+from scheduler.task_engine import TaskEngine
+from watchers.trend_watcher import TrendWatcher
 
-def run_engine():
-    log('?? Engine Loop Started')
+logger = setup_logger(\"cron\")
+
+def start_scheduler():
+    logger.info(\"🚀 Scheduler started\")
+
+    engine = TaskEngine()
+    engine.start(num_workers=4)
+
+    trend = TrendWatcher()
 
     while True:
-        headlines = scrape_trending_worldcup()
+        try:
+            engine.add_task(trend.check_trends)
+        except Exception as e:
+            logger.error(f\"Failed scheduling trend task → {e}\")
 
-        for h in headlines:
-            reaction = generate_reaction(h)
-            post_tweet(reaction)
-            time.sleep(30)
-
-        time.sleep(Config.POST_INTERVAL)
-
+        time.sleep(120)  # every 2 minutes
