@@ -1,22 +1,60 @@
-﻿import time
+﻿# -*- coding: utf-8 -*-
+"""
+cron.py
+-------
+Central scheduler for TiraPalos Engine.
+
+Runs every minute via threader.py and main.py.
+Handles background periodic tasks such as:
+- Meme generation
+- Gossip content
+- Daily culture posts
+- Itinerary content for World Cup cities
+- Persona-flavored long-form tweets
+"""
+
 from utils.logger import setup_logger
-from scheduler.task_engine import TaskEngine
-from watchers.trend_watcher import TrendWatcher
+from ai.brain import AIBrain
+from persona.responses import PersonaResponder
+from social.twitter_service import TwitterService
 
 logger = setup_logger("cron")
 
-def start_scheduler():
-    logger.info("🚀 Scheduler started")
 
-    engine = TaskEngine()
-    engine.start(num_workers=4)
+def run_cron_cycle():
+    """
+    Runs once per minute (or whatever interval threader sets).
+    Every cycle performs low-frequency but essential tasks.
+    """
+    logger.info("🕒 Cron cycle started")
 
-    trend = TrendWatcher()
+    twitter = TwitterService()
+    ai = AIBrain()
+    persona = PersonaResponder()
 
-    while True:
-        try:
-            engine.add_task(trend.check_trends)
-        except Exception as e:
-            logger.error(f"Failed scheduling trend task → {e}")
+    try:
+        # ---------- 1. Generate a meme (not every cycle) ----------
+        meme = ai.generate_meme()
+        if meme and ai.should_post_meme():
+            tweet = persona.apply_persona(meme)
+            twitter.post_tweet(tweet)
+            logger.info(f"🖼 Posted meme via cron: {tweet}")
 
-        time.sleep(120)  # every 2 minutes
+        # ---------- 2. Gossip injection ----------
+        gossip = ai.generate_gossip_piece()
+        if gossip and ai.should_post_gossip():
+            tweet = persona.apply_persona(gossip)
+            twitter.post_tweet(tweet)
+            logger.info(f"💋 Posted gossip piece: {tweet}")
+
+        # ---------- 3. Culture or itinerary (1–2x per day only) ----------
+        daily = ai.generate_daily_culture_post()
+        if daily and ai.should_post_daily():
+            tweet = persona.apply_persona(daily)
+            twitter.post_tweet(tweet)
+            logger.info(f"🌍 Posted daily culture/itinerary: {tweet}")
+
+        logger.info("🕒 Cron cycle completed")
+
+    except Exception as e:
+        logger.error(f"❌ Error in cron cycle: {e}")
