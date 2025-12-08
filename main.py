@@ -12,13 +12,12 @@ app = Flask(__name__)
 def health():
     return jsonify(check_health())
 
-def run_scheduler():
-    logger.info(\"Starting background scheduler...\")
+def background_worker():
+    logger.info(\"Starting scheduler engine...\")
     start_scheduler()
 
 if __name__ == '__main__':
-    t = threading.Thread(target=run_scheduler, daemon=True)
-    t.start()
+    threading.Thread(target=background_worker, daemon=True).start()
 
-    logger.info(\"Starting Flask health server...\")
+    logger.info(\"Flask health server running on port 8080…\")
     app.run(host='0.0.0.0', port=8080)
