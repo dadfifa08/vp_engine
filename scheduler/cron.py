@@ -1,21 +1,20 @@
 import time
-from utils.scraper import scrape_trending_worldcup
-from ai.reaction_engine import reaction_engine
-from social.twitter_service import post_tweet
 from utils.logger import log
+from utils.scraper import scrape_trending_worldcup
+from ai.reaction_engine import generate_reaction
+from social.twitter_service import post_tweet
+from config import Config
 
-def run_loop():
-    log("??? Starting 24/7 TiraPalos Engine (Tóxico Mode)…")
+def run_engine():
+    log('?? Engine Loop Started')
 
     while True:
         headlines = scrape_trending_worldcup()
 
         for h in headlines:
-            reaction = reaction_engine(h)
+            reaction = generate_reaction(h)
             post_tweet(reaction)
-            time.sleep(45)
+            time.sleep(30)
 
-        time.sleep(300)  # 5 minutes
+        time.sleep(Config.POST_INTERVAL)
 
-if __name__ == "__main__":
-    run_loop()
