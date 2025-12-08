@@ -1,15 +1,10 @@
-import tweepy
-from persona.persona import ToxicoPersona
+﻿# auto_reply.py — Handles auto-replies safely
 
-bot = ToxicoPersona()
+from social.twitter_service import TwitterService
 
 class AutoReply:
-    def __init__(self, api):
-        self.api = api
+    def __init__(self):
+        self.service = TwitterService()
 
-    def reply_to_tweet(self, tweet):
-        mensaje = bot.generate_comment()
-        self.api.update_status(
-            status=f"@{tweet.user.screen_name} {mensaje}",
-            in_reply_to_status_id=tweet.id
-        )
+    def reply(self, text: str):
+        return self.service.post_tweet(text)

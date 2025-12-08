@@ -1,25 +1,28 @@
-# -*- coding: utf-8 -*-
-"""
-Thread engine for TiraPalos — generates and posts threads to Twitter.
-This file is intentionally simple until full thread logic is implemented.
-"""
+﻿# threader.py — Builds tweet threads reliably
 
-from utils.logger import log
-from social.twitter_service import post_tweet
+from social.twitter_service import TwitterService
 
-def run_threads():
-    """
-    Placeholder engine that will be expanded later.
-    For now, it simply posts a heartbeat tweet to confirm the worker is alive.
-    """
+class Threader:
+    def __init__(self):
+        self.service = TwitterService()
 
-    log("🧵 Running thread engine...")
+    def create_thread(self, tweets: list[str]):
+        if not tweets:
+            return False
 
-    # Example placeholder content
-    text = "TiraPalos engine is running in the cloud 🏎️💨 #TiraPalos"
+        previous_tweet_id = None
+        responses = []
 
-    try:
-        post_tweet(text)
-        log("🧵 Thread engine heartbeat tweet sent.")
-    except Exception as exc:
-        log(f"❌ Thread engine failed: {exc}")
+        for text in tweets:
+            if not text:
+                continue
+
+            response = self.service.post_tweet(text)
+            responses.append(response)
+
+            try:
+                previous_tweet_id = response.get("data", {}).get("id")
+            except:
+                previous_tweet_id = None
+
+        return responses
