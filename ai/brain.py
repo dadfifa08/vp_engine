@@ -1,102 +1,112 @@
-# -*- coding: utf-8 -*-
-"""
-AIBrain — Production Grade
-Handles:
-- Reactions
-- Memes
-- Gossip
-- Culture posts
-- Thread reactions
-- Replies
-Uses OpenAI GPT-4o / GPT-4o-mini
-"""
-
 import os
-import openai
-from utils.logger import setup_logger
-
-logger = setup_logger("brain")
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
+import random
+from openai import OpenAI
+from logger import log
 
 
 class AIBrain:
-    def __init__(self):
-        self.model = "gpt-4o-mini"
+    """
+    Central intelligence engine for:
+    - Toxic banter mode
+    - Rumor generation
+    - Celebrity × football crossover gossip
+    - Informational content
+    - Meme caption creation
+    - Replies to trending posts
+    """
 
-    # ------------------------------------------------------------------
-    def call(self, prompt: str):
-        try:
-            response = openai.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=200
+    def __init__(self, mode="toxico"):
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.mode = mode
+
+    # ---------------------------
+    # Core prompt builders
+    # ---------------------------
+
+    def _build_system_prompt(self):
+        if self.mode == "toxico":
+            return (
+                "You are TiraPalos — an aggressive, instigating, Mexican-American football "
+                "tóxico personality. You connect drama that shouldn't be connected, you gossip, "
+                "you stir rivalries, you exaggerate, you drop Latino inside jokes, "
+                "and you are hilarious and chaotic. No hashtags allowed except #TiraPalos at end."
             )
-            return response.choices[0].message["content"]
+
+        if self.mode == "informative":
+            return (
+                "You generate accurate, clean, useful content about World Cup 2026, "
+                "host cities, match previews, tactical breakdowns, travel guides."
+            )
+
+        if self.mode == "rumors":
+            return (
+                "Generate outrageous but semi-plausible celebrity × football crossover rumors. "
+                "Example: linking divorces, breakups, cheating scandals, vacations, "
+                "to football performance or transfers. Make it spicy, chaotic and creative."
+            )
+
+        return "You are a general-purpose creative writer. Produce engaging content."
+
+    # ---------------------------
+    # Main generator
+    # ---------------------------
+
+    def generate(self, context):
+        """Generic text generation engine"""
+
+        try:
+            system_prompt = self._build_system_prompt()
+
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": context},
+                ],
+                max_tokens=300,
+                temperature=1.1 if self.mode == "toxico" else 0.9,
+            )
+
+            text = response.choices[0].message.content.strip()
+
+            # Force brand tag
+            if not text.endswith("#TiraPalos"):
+                text += " #TiraPalos"
+
+            return text
+
         except Exception as e:
-            logger.error(f"OpenAI error: {e}")
+            log("AIBrain generation error", e)
             return None
 
-    # ------------------------------------------------------------------
-    def generate_reaction(self, trends=[], gossip=[], matches=[], tiktok=[]):
-        prompt = f"""
-Eres un narrador tóxico, gracioso, y Mexa-Americano.
-Responde con banter, picardía, chisme, y reacciones exageradas.
-Trends: {trends}
-Gossip hooks: {gossip}
-Match events: {matches}
-TikTok sparks: {tiktok}
+    # ---------------------------
+    # Specialized modes
+    # ---------------------------
 
-Generate ONE chaotic reaction tweet (short).
-Include Spanglish, slang, fútbol toxicity.
-Do NOT include any hashtags except append '#TiraPalos' at the end.
-"""
-        return self.call(prompt)
+    def generate_toxic_reply(self, tweet_text, author):
+        prompt = (
+            f"Reply tóxico to this tweet:\n\n"
+            f"Tweet: {tweet_text}\nAuthor: {author}\n\n"
+            f"Be savage, chaotic, funny, Latino-coded, instigating rivalries. "
+        )
+        return self.generate(prompt)
 
-    # ------------------------------------------------------------------
-    def generate_reply(self, mention):
-        prompt = f"""
-User tweeted: {mention}
-Respond como un compa tóxico, but funny.
-Keep it short and spicy.
-"""
-        return self.call(prompt)
+    def generate_meme_caption(self, topic):
+        prompt = (
+            f"Generate a meme caption about: {topic}\n"
+            f"Funny, toxic, chaotic, Mexican-American humor."
+        )
+        return self.generate(prompt)
 
-    # ------------------------------------------------------------------
-    def generate_thread_react(self, post):
-        prompt = f"""
-React tóxicamente to this viral tweet:
-{post}
+    def generate_rumor(self, person_a, person_b):
+        prompt = (
+            f"Generate a football × celebrity rumor involving {person_a} and {person_b}. "
+            f"Be outrageous, but with a hint of plausibility. Maximum chisme."
+        )
+        return self.generate(prompt)
 
-Keep it petty, soccer-themed, and Mexa-Chicano spicy.
-"""
-        return self.call(prompt)
-
-    # ------------------------------------------------------------------
-    def generate_meme(self):
-        prompt = """
-Create a meme caption about fútbol, drama, or the World Cup.
-Short, punchy, toxic, and viral.
-"""
-        return self.call(prompt)
-
-    # ------------------------------------------------------------------
-    def generate_gossip_piece(self):
-        prompt = """
-Invent or exaggerate un chisme futbolero.
-Make it spicy but not defamatory.
-Short and chaotic.
-"""
-        return self.call(prompt)
-
-    # ------------------------------------------------------------------
-    def generate_daily_culture_post(self):
-        prompt = """
-Create an informative but fun post about:
-- A World Cup city
-- Food
-- Culture
-- Traditions
-Make it helpful and cool.
-"""
-        return self.call(prompt)
+    def generate_worldcup_info(self, query):
+        prompt = (
+            f"Create an informative piece related to World Cup 2026 about: {query}."
+        )
+        return self.generate(prompt)
