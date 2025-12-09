@@ -1,63 +1,77 @@
-"""
-Event Detector: analyzes social media trends, match updates, news spikes,
-and determines when the AI should react with memes, gossip, tóxico banter, etc.
-"""
+# utils/events_detector.py
+# Clean UTF-8 file - no accented characters or corrupted bytes
 
-from utils.logger import setup_logger
-
-logger = setup_logger("events")
+import logging
+import httpx
+import os
+from datetime import datetime, timedelta
 
 class EventDetector:
-    def __init__(self, twitter_client=None):
-        self.twitter = twitter_client
+    """
+    EventDetector scans multiple data sources (API-Football, trending topics,
+    match events, rumors) and emits structured "events" that the bot can react to.
+    """
 
-    def detect_trends(self):
+    def __init__(self):
+        self.api_key = os.getenv("APIFOOTBALL_KEY")
+        self.base = os.getenv("APIFOOTBALL_BASE", "https://v3.football.api-sports.io")
+        self.client = httpx.Client(
+            base_url=self.base,
+            headers={"x-apisports-key": self.api_key}
+        )
+        logging.info("EventDetector initialized")
+
+    def detect_match_events(self, league_id=1):
         """
-        Pull trending Twitter topics.
+        Detect match events such as goals, substitutions, cards, drama moments.
         """
         try:
-            trends = self.twitter.get_trending_topics()
-            logger.info(f"Detected {len(trends)} trending topics.")
-            return trends
+            today = datetime.utcnow().date()
+            resp = self.client.get(
+                "/fixtures",
+                params={"date": today, "league": league_id, "season": 2024}
+            )
+            data = resp.json()
+
+            events = []
+
+            if "response" not in data:
+                return events
+
+            for fixture in data["response"]:
+                match = fixture.get("fixture", {})
+                teams = fixture.get("teams", {})
+                goals = fixture.get("goals", {})
+                status = match.get("status", {}).get("short")
+
+                events.append({
+                    "type": "match_update",
+                    "home": teams.get("home", {}).get("name"),
+                    "away": teams.get("away", {}).get("name"),
+                    "goals_home": goals.get("home"),
+                    "goals_away": goals.get("away"),
+                    "status": status,
+                    "timestamp": datetime.utcnow().isoformat()
+                })
+
+            return events
+
         except Exception as e:
-            logger.error(f"Trend detection error: {e}")
+            logging.error(f"EventDetector match event error: {e}")
             return []
 
-    def detect_mentions(self):
+    def detect_newsworthy_items(self):
         """
-        Detect fresh mentions for auto-replies.
+        Dummy placeholder for celebrity drama / trending rumor detection.
+        Real version will integrate Reddit, Twitter trends, Google Trends, etc.
         """
         try:
-            mentions = self.twitter.get_mentions()
-            logger.info(f"Detected {len(mentions)} mentions.")
-            return mentions
+            return [{
+                "type": "rumor",
+                "summary": "Celebrity X spotted in airport near training camp.",
+                "timestamp": datetime.utcnow().isoformat()
+            }]
         except Exception as e:
-            logger.error(f"Mention detection error: {e}")
+            logging.error(f"EventDetector rumor detection error: {e}")
             return []
 
-    def detect_match_events(self):
-        """
-        Placeholder — later reads match APIs or scrapes live sources.
-        """
-        try:
-            # TODO: Add real match watcher service
-            return []
-        except Exception as e:
-            logger.error(f"Match event detection error: {e}")
-            return []
-
-    def detect_gossip_opportunities(self, trends):
-        """
-        Look for drama, beef, scandals, celebrity crossover gossip.
-        """
-        opportunities = []
-
-        for t in trends:
-            t_lower = t.lower()
-            if any(keyword in t_lower for keyword in ["divorce", "fight", "cheating", "transfer", "scandal"]):
-                opportunities.append(t)
-
-        if opportunities:
-            logger.info(f"Gossip opportunities found: {opportunities}")
-
-        return opportunities
