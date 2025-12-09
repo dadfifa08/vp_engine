@@ -43,16 +43,14 @@ def start_watchers():
 def main():
     log("VP Engine booting up")
 
-    # launch subsystems
     threading.Thread(target=start_scheduler, daemon=True).start()
     threading.Thread(target=start_autopilot, daemon=True).start()
     threading.Thread(target=start_watchers, daemon=True).start()
 
     log("All subsystems launched")
 
-    # keep container alive
     while True:
         time.sleep(60)
 
 if __name__ == "__main__":
-    main(
+    main()

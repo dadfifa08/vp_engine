@@ -8,13 +8,13 @@ class VPEngineLogger:
         self.logger.setLevel(logging.INFO)
         self.logger.handlers.clear()
 
-        stream_handler = logging.StreamHandler(sys.stdout)
-        stream_handler.setFormatter(logging.Formatter(
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(logging.Formatter(
             "%(asctime)s [%(levelname)s] %(message)s",
             "%Y-%m-%d %H:%M:%S"
         ))
 
-        self.logger.addHandler(stream_handler)
+        self.logger.addHandler(handler)
 
     def log(self, message):
         if isinstance(message, dict):
@@ -22,7 +22,6 @@ class VPEngineLogger:
         else:
             self.logger.info(message)
 
-# global shared logger instance
 _logger_instance = VPEngineLogger()
 
 def log(message):
