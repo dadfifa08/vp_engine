@@ -1,14 +1,8 @@
-import time
 from utils.logger import log
-from persona.responder import PersonaResponder
-from services.twitter_service import TwitterService
+import time
 
 class MatchWatcher:
-    def __init__(self):
-        self.twitter = TwitterService()
-        self.persona = PersonaResponder()
-
     def run(self):
-        log("MatchWatcher started")
+        log("MatchWatcher running")
         while True:
             time.sleep(60)

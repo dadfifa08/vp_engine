@@ -1,9 +1,6 @@
-from brain.ai_brain import AIBrain
+from utils.logger import log
 
 class PersonaResponder:
-
-    def __init__(self):
-        self.brain = AIBrain()
-
-    def generate_daily_team_post(self, team_name, stats):
-        return self.brain.build_worldcup_report(team_name, stats)
+    def reply(self, text):
+        log(f"Persona responder received: {text}")
+        return text

@@ -1,8 +1,8 @@
-import time
 from utils.logger import log
+import time
 
 class TikTokWatcher:
     def run(self):
-        log("TikTokWatcher started")
+        log("TikTokWatcher running")
         while True:
-            time.sleep(300)
+            time.sleep(60)

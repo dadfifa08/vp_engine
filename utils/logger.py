@@ -1,6 +1,5 @@
 import logging
 import sys
-from datetime import datetime
 
 class VPEngineLogger:
     def __init__(self):
@@ -13,16 +12,12 @@ class VPEngineLogger:
             "%(asctime)s [%(levelname)s] %(message)s",
             "%Y-%m-%d %H:%M:%S"
         ))
-
         self.logger.addHandler(handler)
 
     def log(self, message):
-        if isinstance(message, dict):
-            self.logger.info(str(message))
-        else:
-            self.logger.info(message)
+        self.logger.info(message)
 
-_logger_instance = VPEngineLogger()
+_logger = VPEngineLogger()
 
 def log(message):
-    _logger_instance.log(message)
+    _logger.log(message)
