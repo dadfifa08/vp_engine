@@ -1,31 +1,61 @@
-﻿import random
-from utils.logger import setup_logger
-from ai.reaction_engine import ReactionEngine
-from social.poster import Poster
+﻿# -*- coding: utf-8 -*-
+"""
+TrendWatcher — Production Grade
+Detects Twitter trends AND trending posts via hybrid strategy:
+- Top daily Twitter trends
+- Viral posts via hashtag & keyword scan
+"""
 
-logger = setup_logger(\"trend_watcher\")
+from utils.logger import setup_logger
+from social.twitter_service import TwitterService
+
+logger = setup_logger("trendwatch")
+
 
 class TrendWatcher:
-    def __init__(self):
-        self.reactor = ReactionEngine()
-        self.poster = Poster()
+    def __init__(self, twitter: TwitterService):
+        self.twitter = twitter
 
-    def check_trends(self):
-        logger.info(\"Scanning for new trends...\")
+    # ----------------------------------------------------------------------
+    def get_trends(self):
+        try:
+            trends = self.twitter.get_trending_topics()
+            logger.info(f"TrendWatcher: {len(trends)} trends detected.")
+            return trends
+        except Exception as e:
+            logger.error(f"TrendWatcher trend error: {e}")
+            return []
+
+    # ----------------------------------------------------------------------
+    def get_hot_posts(self):
+        """
+        Pulls trending tweets across multiple keywords.
+        You can expand this to scrape more categories.
+        """
+        hot_posts = []
+
+        keywords = [
+            "world cup",
+            "mexico",
+            "usa",
+            "argentina",
+            "neymar",
+            "mbappe",
+            "vinicius",
+            "gol",
+            "penalty",
+            "VAR",
+        ]
 
         try:
-            headlines = self.reactor.scrape_headlines()
+            for k in keywords:
+                posts = self.twitter.client.search_tweets(query=k, limit=5)
+                if posts:
+                    hot_posts.extend(posts)
 
-            if not headlines:
-                logger.info(\"No trends found.\")
-                return
-
-            headline = random.choice(headlines)
-            response = self.reactor.generate_reaction(headline)
-
-            if response:
-                self.poster.post(response)
-                logger.info(f\"Posted trend reaction: {response}\")
+            logger.info(f"TrendWatcher: {len(hot_posts)} hot posts found.")
+            return hot_posts
 
         except Exception as e:
-            logger.error(f\"Trend watcher error → {e}\")
+            logger.error(f"TrendWatcher hot post error: {e}")
+            return []
