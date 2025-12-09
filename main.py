@@ -1,4 +1,4 @@
-# main.py - Clean UTF-8 Safe Version
+ï»¿# main.py - CLEAN UTF-8 SAFE VERSION
 
 import time
 from logger import log_info, log_error
@@ -12,14 +12,13 @@ from scheduler.threader import Threader
 
 def start_engine():
     try:
-        log_info("Starting VP Engine (Toxico Mode)")
+        log_info("Starting VP Engine (Toxico Mode Booting)")
 
         brain = AIBrain()
         persona = PersonaResponder()
         trends = TrendWatcher()
         matches = MatchWatcher()
         tik = TikTokWatcher()
-
         threader = Threader()
 
         def loop():
@@ -29,18 +28,17 @@ def start_engine():
                     m = matches.watch()
                     tk = tik.detect()
 
-                    # No posting yet — safe mode
-                    log_info("Heartbeat OK.")
+                    log_info("Heartbeat OK")
                     time.sleep(60)
 
                 except Exception as inner:
-                    log_error(f"Engine loop error: {str(inner)}")
+                    log_error("Engine loop error: " + str(inner))
                     time.sleep(10)
 
         threader.run_async(loop)
 
     except Exception as outer:
-        log_error(f"Fatal error: {str(outer)}")
+        log_error("Fatal boot error: " + str(outer))
 
 if __name__ == "__main__":
     start_engine()
