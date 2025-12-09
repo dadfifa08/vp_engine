@@ -1,32 +1,26 @@
 import logging
-import os
-from datetime import datetime
+import sys
+from logging.handlers import RotatingFileHandler
 
-# Railway-safe: write logs to /tmp (the only writable directory)
-LOG_DIR = "/tmp/vp_logs"
-
-os.makedirs(LOG_DIR, exist_ok=True)
-
-def setup_logger(name: str):
-    """Creates a logger with rotating daily log files"""
-    logger = logging.getLogger(name)
+def setup_logger():
+    logger = logging.getLogger("vp_engine")
     logger.setLevel(logging.INFO)
 
-    if logger.handlers:
-        return logger
+    if not logger.handlers:
 
-    log_filename = datetime.now().strftime("%Y-%m-%d") + ".log"
-    filepath = os.path.join(LOG_DIR, log_filename)
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
 
-    handler = logging.FileHandler(filepath, encoding="utf-8")
-    handler.setLevel(logging.INFO)
+        file_handler = RotatingFileHandler(
+            "vp_engine.log",
+            maxBytes=2_000_000,
+            backupCount=3
+        )
+        file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
 
-    formatter = logging.Formatter(
-        "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
-    )
+        logger.addHandler(stream_handler)
+        logger.addHandler(file_handler)
 
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
     return logger
 
+log = setup_logger()
