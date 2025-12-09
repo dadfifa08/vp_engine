@@ -1,26 +1,29 @@
 import logging
 import sys
-from logging.handlers import RotatingFileHandler
+from datetime import datetime
 
-def setup_logger():
-    logger = logging.getLogger("vp_engine")
-    logger.setLevel(logging.INFO)
-
-    if not logger.handlers:
+class VPEngineLogger:
+    def __init__(self):
+        self.logger = logging.getLogger("vp_engine")
+        self.logger.setLevel(logging.INFO)
+        self.logger.handlers.clear()
 
         stream_handler = logging.StreamHandler(sys.stdout)
-        stream_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+        stream_handler.setFormatter(logging.Formatter(
+            "%(asctime)s [%(levelname)s] %(message)s",
+            "%Y-%m-%d %H:%M:%S"
+        ))
 
-        file_handler = RotatingFileHandler(
-            "vp_engine.log",
-            maxBytes=2_000_000,
-            backupCount=3
-        )
-        file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+        self.logger.addHandler(stream_handler)
 
-        logger.addHandler(stream_handler)
-        logger.addHandler(file_handler)
+    def log(self, message):
+        if isinstance(message, dict):
+            self.logger.info(str(message))
+        else:
+            self.logger.info(message)
 
-    return logger
+# global shared logger instance
+_logger_instance = VPEngineLogger()
 
-log = setup_logger()
+def log(message):
+    _logger_instance.log(message)
