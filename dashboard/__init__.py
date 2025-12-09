@@ -1,2 +1,2 @@
-﻿from flask import Blueprint
+from flask import Blueprint
 routes = Blueprint('dashboard', __name__)

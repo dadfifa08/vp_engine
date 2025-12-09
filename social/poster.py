@@ -1,4 +1,4 @@
-﻿# poster.py — High-level orchestrator for posting content
+# poster.py � High-level orchestrator for posting content
 
 from social.twitter_service import TwitterService
 

@@ -1,4 +1,4 @@
-﻿import sqlite3
+import sqlite3
 from utils.logger import setup_logger
 
 logger = setup_logger('analytics')

@@ -1,4 +1,4 @@
-﻿# auto_reply.py — Handles auto-replies safely
+# auto_reply.py � Handles auto-replies safely
 
 from social.twitter_service import TwitterService
 

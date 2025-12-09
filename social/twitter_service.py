@@ -1,4 +1,4 @@
-﻿# twitter_service.py
+# twitter_service.py
 from twitter_api import TwitterAPI
 from logger import log_info, log_error
 
@@ -23,7 +23,7 @@ class TwitterService:
             return False
 
         except Exception as e:
-            log_error(f"post_tweet() crash → {e}")
+            log_error(f"post_tweet() crash ? {e}")
             return False
 
     # ---------------------------------------------------
@@ -43,5 +43,5 @@ class TwitterService:
             return response.status_code == 200
 
         except Exception as e:
-            log_error(f"reply() crash → {e}")
+            log_error(f"reply() crash ? {e}")
             return False

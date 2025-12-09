@@ -1,6 +1,6 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-TikTokWatcher — Production Grade
+TikTokWatcher � Production Grade
 Uses lightweight TikTok scraping to detect trending:
 - Sounds
 - Hashtags

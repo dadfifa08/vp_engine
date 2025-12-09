@@ -1,4 +1,4 @@
-﻿import threading
+import threading
 import queue
 from utils.logger import setup_logger
 

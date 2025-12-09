@@ -1,4 +1,4 @@
-﻿import random
+import random
 from persona.toxicity import ToxicoPersona
 from persona.gossip import GossipPersona
 from persona.banter import BanterPersona

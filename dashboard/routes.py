@@ -1,4 +1,4 @@
-﻿from flask import render_template
+from flask import render_template
 from dashboard import routes
 from utils.analytics import Analytics
 

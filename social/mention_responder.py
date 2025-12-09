@@ -1,4 +1,4 @@
-﻿from utils.logger import setup_logger
+from utils.logger import setup_logger
 from social.twitter_service import TwitterService
 from ai.reaction_engine import ReactionEngine
 

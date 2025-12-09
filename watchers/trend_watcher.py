@@ -1,6 +1,6 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-TrendWatcher — Production Grade
+TrendWatcher � Production Grade
 Detects Twitter trends AND trending posts via hybrid strategy:
 - Top daily Twitter trends
 - Viral posts via hashtag & keyword scan

@@ -1,4 +1,4 @@
-﻿# twitter_client.py — Handles authentication + direct Twitter API calls
+# twitter_client.py � Handles authentication + direct Twitter API calls
 
 import os
 import logging

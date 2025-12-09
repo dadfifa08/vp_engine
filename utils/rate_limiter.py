@@ -1,4 +1,4 @@
-﻿import time
+import time
 
 class RateLimiter:
     def __init__(self, max_errors=5, cooldown=60):

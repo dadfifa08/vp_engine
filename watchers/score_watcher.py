@@ -1,4 +1,4 @@
-﻿import requests
+import requests
 from utils.logger import setup_logger
 
 logger = setup_logger(\"score_watcher\")
@@ -15,5 +15,5 @@ class ScoreWatcher:
             return matches
 
         except Exception as e:
-            logger.error(f\"Live score ingestion failed → {e}\")
+            logger.error(f\"Live score ingestion failed ? {e}\")
             return []

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 cron.py
 -------
@@ -26,7 +26,7 @@ def run_cron_cycle():
     Runs once per minute (or whatever interval threader sets).
     Every cycle performs low-frequency but essential tasks.
     """
-    logger.info("🕒 Cron cycle started")
+    logger.info("?? Cron cycle started")
 
     twitter = TwitterService()
     ai = AIBrain()
@@ -38,23 +38,23 @@ def run_cron_cycle():
         if meme and ai.should_post_meme():
             tweet = persona.apply_persona(meme)
             twitter.post_tweet(tweet)
-            logger.info(f"🖼 Posted meme via cron: {tweet}")
+            logger.info(f"?? Posted meme via cron: {tweet}")
 
         # ---------- 2. Gossip injection ----------
         gossip = ai.generate_gossip_piece()
         if gossip and ai.should_post_gossip():
             tweet = persona.apply_persona(gossip)
             twitter.post_tweet(tweet)
-            logger.info(f"💋 Posted gossip piece: {tweet}")
+            logger.info(f"?? Posted gossip piece: {tweet}")
 
-        # ---------- 3. Culture or itinerary (1–2x per day only) ----------
+        # ---------- 3. Culture or itinerary (1�2x per day only) ----------
         daily = ai.generate_daily_culture_post()
         if daily and ai.should_post_daily():
             tweet = persona.apply_persona(daily)
             twitter.post_tweet(tweet)
-            logger.info(f"🌍 Posted daily culture/itinerary: {tweet}")
+            logger.info(f"?? Posted daily culture/itinerary: {tweet}")
 
-        logger.info("🕒 Cron cycle completed")
+        logger.info("?? Cron cycle completed")
 
     except Exception as e:
-        logger.error(f"❌ Error in cron cycle: {e}")
+        logger.error(f"? Error in cron cycle: {e}")

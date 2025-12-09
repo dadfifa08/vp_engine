@@ -1,4 +1,4 @@
-﻿# threader.py — Builds tweet threads reliably
+# threader.py � Builds tweet threads reliably
 
 from social.twitter_service import TwitterService
 

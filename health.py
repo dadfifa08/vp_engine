@@ -1,4 +1,4 @@
-﻿# health.py — Railway health check
+# health.py � Railway health check
 
 def check_health():
     return {

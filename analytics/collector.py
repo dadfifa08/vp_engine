@@ -1,4 +1,4 @@
-﻿import threading
+import threading
 import time
 from utils.logger import setup_logger
 
@@ -14,5 +14,5 @@ class AnalyticsCollector:
 
     def loop(self):
         while self.running:
-            logger.info("Collecting analytics…")
+            logger.info("Collecting analytics�")
             time.sleep(60)

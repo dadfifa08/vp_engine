@@ -1,4 +1,4 @@
-﻿class Roles:
+class Roles:
     ADMINS = {"your_twitter_handle"}
     MODERATORS = set()
 
