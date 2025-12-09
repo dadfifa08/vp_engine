@@ -1,20 +1,16 @@
 import time
+from utils.logger import log
 
 class RateLimiter:
-    def __init__(self, max_errors=5, cooldown=60):
-        self.max_errors = max_errors
-        self.cooldown = cooldown
-        self.error_count = 0
-        self.block_until = 0
+    def __init__(self, interval=3):
+        self.interval = interval
+        self.last = 0
 
-    def allow(self):
+    def wait_if_needed(self):
         now = time.time()
-        if now < self.block_until:
-            return False
-        return True
-
-    def register_error(self):
-        self.error_count += 1
-        if self.error_count >= self.max_errors:
-            self.block_until = time.time() + self.cooldown
-            self.error_count = 0
+        diff = now - self.last
+        if diff < self.interval:
+            sleep_time = self.interval - diff
+            log("Rate limit sleep " + str(sleep_time))
+            time.sleep(sleep_time)
+        self.last = time.time()

@@ -1,6 +1,14 @@
-from logger import log_info, log_error
+import time
+from utils.logger import log
+from persona.responder import PersonaResponder
+from services.twitter_service import TwitterService
 
 class MatchWatcher:
-    def watch(self):
-        log_info("Watching matches...")
-        return []
+    def __init__(self):
+        self.twitter = TwitterService()
+        self.persona = PersonaResponder()
+
+    def run(self):
+        log("MatchWatcher started")
+        while True:
+            time.sleep(60)

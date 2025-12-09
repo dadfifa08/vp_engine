@@ -1,6 +1,8 @@
-from logger import log_info, log_error
+import time
+from utils.logger import log
 
 class TikTokWatcher:
-    def detect(self):
-        log_info("Detecting TikTok trends...")
-        return []
+    def run(self):
+        log("TikTokWatcher started")
+        while True:
+            time.sleep(300)
